@@ -33,9 +33,14 @@ enum key_mod
 // 0x09 - TAB
 // 0x0A - NEW LINE
 // 0x0D - CARRIAGE RETURN
+#define KEY_PAGE_UP 0x0E
+#define KEY_PAGE_DOWN 0x0F
+
 #define KEY_BTN_LEFT2	0x11
 #define KEY_BTN_RIGHT2	0x12
 
+#define KEY_HOME 0x13
+#define KEY_END 0x14
 #define KEY_MOD_ALT		0x1A
 #define KEY_MOD_SHL		0x1B // Left Shift
 #define KEY_MOD_SHR		0x1C // Right Shift

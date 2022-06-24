@@ -103,6 +103,24 @@ void touchpad_gpio_irq(uint gpio, uint32_t events)
 					self.last_swipe_time = to_ms_since_boot(get_absolute_time());
 				}
 			}
+		} else if (keyboard_is_mod_on(KEY_MOD_ID_SYM)) {
+			if (to_ms_since_boot(get_absolute_time()) - self.last_swipe_time > SWIPE_COOLDOWN_TIME_MS) {
+				char key = '\0';
+				if (MOTION_IS_SWIPE(y, x)) {
+					key = (y < 0) ? KEY_PAGE_UP : KEY_PAGE_DOWN;
+				} else if (MOTION_IS_SWIPE(x, y)) {
+					key = (x < 0) ? KEY_HOME : KEY_END;
+				}
+
+				if (key != '\0') {
+					keyboard_inject_event(key, KEY_STATE_PRESSED);
+
+					// we need to allow the usb a bit of time to send the press, so schedule the release after a bit
+					add_alarm_in_ms(SWIPE_RELEASE_DELAY_MS, release_key, (void*)(int)key, true);
+
+					self.last_swipe_time = to_ms_since_boot(get_absolute_time());
+				}
+			}
 		} else {
 			if (self.callbacks) {
 				struct touch_callback *cb = self.callbacks;

@@ -61,6 +61,10 @@ static void key_cb(char key, enum key_state state)
 		conv_table[KEY_JOY_DOWN][1]		= HID_KEY_ARROW_DOWN;
 		conv_table[KEY_JOY_LEFT][1]		= HID_KEY_ARROW_LEFT;
 		conv_table[KEY_JOY_RIGHT][1]	= HID_KEY_ARROW_RIGHT;
+		conv_table[KEY_HOME][1]         = HID_KEY_HOME;
+		conv_table[KEY_END][1]          = HID_KEY_END;
+		conv_table[KEY_PAGE_UP][1]      = HID_KEY_PAGE_UP;
+		conv_table[KEY_PAGE_DOWN][1]    = HID_KEY_PAGE_DOWN;
 
 		uint8_t keycode[6] = { 0 };
 		uint8_t modifier   = 0;
