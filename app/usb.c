@@ -51,7 +51,8 @@ static void key_cb(char key, enum key_state state)
 	if ((key == KEY_MOD_SHL) ||
 		(key == KEY_MOD_SHR) ||
 		(key == KEY_MOD_ALT) ||
-		(key == KEY_MOD_SYM))
+		(key == KEY_MOD_SYM) || 
+		(key == KEY_MOD_CTL)) 
 		return;
 
 	if (tud_hid_n_ready(USB_ITF_KEYBOARD) && reg_is_bit_set(REG_ID_CF2, CF2_USB_KEYB_ON)) {
@@ -65,6 +66,8 @@ static void key_cb(char key, enum key_state state)
 		conv_table[KEY_END][1]          = HID_KEY_END;
 		conv_table[KEY_PAGE_UP][1]      = HID_KEY_PAGE_UP;
 		conv_table[KEY_PAGE_DOWN][1]    = HID_KEY_PAGE_DOWN;
+		conv_table[KEY_BTN_LEFT2][1]    = 0xE3; // KEY_LEFTMETA
+		conv_table[KEY_BTN_RIGHT1][1]   = HID_KEY_ESCAPE;
 
 		conv_table['\x4c'][0]			= 0; // DISABLE SHIFT MOD
 		conv_table['\x4c'][1]			= 0x4C; // DELETE FORWARD
@@ -75,6 +78,10 @@ static void key_cb(char key, enum key_state state)
 		if (state == KEY_STATE_PRESSED) {
 			if (conv_table[(int)key][0])
 				modifier = KEYBOARD_MODIFIER_LEFTSHIFT;
+			
+			if(keyboard_is_mod_on(KEY_MOD_ID_CTL)) {
+				modifier = KEYBOARD_MODIFIER_LEFTCTRL;
+			}
 
 			keycode[0] = conv_table[(int)key][1];
 		}

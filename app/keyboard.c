@@ -40,7 +40,7 @@ static const struct entry kbd_entries[][NUM_OF_COLS] =
 {
 	{ { KEY_JOY_CENTER },  { 'W', '1' },              { 'G', '/' },              { 'S', '4' },              { 'L', '"'  },  { 'H' , ':' } },
 	{ { },                 { 'Q', '#' },              { 'R', '3' },              { 'E', '2' },              { 'O', '+'  },  { 'U', '_'  } },
-	{ { KEY_BTN_LEFT1 },   { '~', '0' },              { 'F', '6' },              { .mod = KEY_MOD_ID_SHL }, { 'K', '\''  }, { 'J', ';'  } },
+	{ { .mod = KEY_MOD_ID_CTL },   { '~', '0' },      { 'F', '6' },              { .mod = KEY_MOD_ID_SHL }, { 'K', '\''  }, { 'J', ';'  } },
 	{ { },                 { ' ', '\t' },             { 'C', '9' },              { 'Z', '7' },              { 'M', '.'  },  { 'N', ','  } },
 	{ { KEY_BTN_LEFT2 },   { .mod = KEY_MOD_ID_SYM }, { 'T', '(' },              { 'D', '5' },              { 'I', '-'  },  { 'Y', ')'  } },
 	{ { KEY_BTN_RIGHT1 },  { .mod = KEY_MOD_ID_ALT }, { 'V', '?' },              { 'X', '8' },              { '$', '`'  },  { 'B', '!'  } },
@@ -109,11 +109,17 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
 					key = KEY_MOD_SYM;
 				break;
 
+			case KEY_MOD_ID_CTL:
+				if (reg_is_bit_set(REG_ID_CFG, CFG_REPORT_MODS))
+					key = KEY_MOD_CTL;
+				break;
+
 			default:
 			{
 				if (reg_is_bit_set(REG_ID_CFG, CFG_USE_MODS)) {
 					const bool shift = (self.mods[KEY_MOD_ID_SHL] || self.mods[KEY_MOD_ID_SHR]) | self.capslock;
 					const bool alt = self.mods[KEY_MOD_ID_ALT] | self.numlock;
+					const bool ctrl = self.mods[KEY_MOD_ID_CTL];
 					const bool is_button = (key <= KEY_BTN_RIGHT1) || ((key >= KEY_BTN_LEFT2) && (key <= KEY_BTN_RIGHT2));
 
 					if (alt && !is_button) {
@@ -185,6 +191,7 @@ static void next_item_state(struct list_item * const p_item, const bool pressed)
 			break;
 
 		case KEY_STATE_PRESSED:
+			// Add a thing that allows us to cancel repeat events for modifiers
 			if ((to_ms_since_boot(get_absolute_time()) - p_item->hold_start_time) > (reg_get_value(REG_ID_HLD) * 10)) {
 				transition_to(p_item, KEY_STATE_HOLD);
 			 } else if(!pressed) {
