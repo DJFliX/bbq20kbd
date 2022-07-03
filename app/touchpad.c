@@ -1,6 +1,7 @@
 #include "touchpad.h"
 
 #include "keyboard.h"
+#include "backlight.h"
 
 #include <hardware/i2c.h>
 #include <pico/binary_info.h>
@@ -122,6 +123,7 @@ void touchpad_gpio_irq(uint gpio, uint32_t events)
 				}
 			}
 		} else {
+			backlight_trigger();
 			if (self.callbacks) {
 				struct touch_callback *cb = self.callbacks;
 
